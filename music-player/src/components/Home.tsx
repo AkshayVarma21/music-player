@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Pagination, InputBase, Paper} from '@mui/material';
+import { Pagination, InputBase, Paper, Snackbar, Alert } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { downloadSongDetails, searchItem } from '../network/apiDetails';
@@ -7,12 +7,18 @@ import bgTheme from '../assets/images/music-theme4.jpg';
 // import { TAB_TYPE } from '../utils/Constants';
 import MusicList from './MusicList';
 
+interface IToastDetails {
+    type: string,
+    message: string,
+}
+
 const Home = () => {
     const [itemSearch, setItemSearch] = useState<string>('');
     const [songsList, setSongsList] = useState<any>();
     const [currentPageSongs, setCurrentPageSongs] = useState<any>();
     const [selectedSong, setSelectedSong] = useState<string>('');
     const [selectedSongDetails, setSelectedSongDetails] = useState<any>();
+    const [toast, setToastDetails] = useState<IToastDetails>({ type: "", message: "" });
 
     // Initial load
     useEffect(() => {
@@ -27,10 +33,16 @@ const Home = () => {
             }
             if (itemSearch)
                 searchItem(requestData).then(res => {
-                    const temp = setPageNumber(res.body.data.result.songs)
-                    setSongsList(temp);
+                    if (res) {
+                        const temp = setPageNumber(res.body.data.result.songs)
+                        setSongsList(temp);
+                    }
+                    else {
+                        setToastDetails({ type: "error", message: "Unable to load songs" })
+                    }
                 })
         } catch (err) {
+            setToastDetails({ type: "error", message: "Unable to load songs" })
             console.log(err);
         }
     }
@@ -106,8 +118,13 @@ const Home = () => {
                 downloadSong={downloadSong}
                 selectedSongDetails={selectedSongDetails} />
             {songsList && songsList.length > 0 &&
-                <Pagination count={songsList && (songsList.length / 10)} size="small" onChange={onChangePage} color='primary'  />
+                <Pagination count={songsList && (songsList.length / 10)} size="small" onChange={onChangePage} color='primary' />
             }
+            <Snackbar open={!!toast.type} autoHideDuration={6000} onClose={() => setToastDetails({ type: "", message: "" })}>
+                <Alert onClose={() => setToastDetails({ type: "", message: "" })} severity="error" sx={{ width: '100%' }}>
+                    {toast && toast.message}
+                </Alert>
+            </Snackbar>
         </div >
     )
 }
