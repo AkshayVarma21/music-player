@@ -1,14 +1,18 @@
 import { useState } from 'react';
-import { Grid, List, ListItem, ListItemText, Avatar, Card, Collapse, Pagination, CardActions } from "@mui/material";
+import { Grid, List, ListItem, ListItemText, Avatar, Card, Collapse, CardActions } from "@mui/material";
 import AudioPlayer from 'react-audio-player';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import '../utils/css/CommonStyles.scss';
-import './MusicList.scss';
 
+interface IMusicList {
+    listData: any,
+    selectedSong: string,
+    selectedSongDetails: any,
+    downloadSong: (id: string) => void
 
-
-const MusicList = (props: any) => {
+}
+const MusicList = (props: IMusicList) => {
     const { listData, selectedSong, downloadSong, selectedSongDetails } = props;
     const [isExpanded, setIsExpanded] = useState<boolean>(false)
     return (
@@ -23,11 +27,11 @@ const MusicList = (props: any) => {
                     justifyContent="center"
                 >
 
-                    <Grid item xs={3}>
-                        <Card className=''>
+                    <Grid item xs={3} className='song-card '>
+                        <Card className='song-card '>
                             {selectedSongDetails &&
                                 <div>
-                                    <div>{selectedSongDetails.title}</div>
+                                    <div className='song-title my-2'>{selectedSongDetails.title}</div>
                                     <img src={selectedSongDetails.thumbnail} alt="" />
                                 </div>
                             }
@@ -60,6 +64,7 @@ const MusicList = (props: any) => {
                                 <ListItemText
                                     primary={item.title}
                                     secondary={item.name}
+                                    className='song-list hoverable'
                                 />
                             </div>
                         </ListItem>

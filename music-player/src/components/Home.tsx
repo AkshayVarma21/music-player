@@ -1,22 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Pagination, InputBase, Paper } from '@mui/material';
+import { Pagination, InputBase, Paper} from '@mui/material';
 import { useState, useEffect } from 'react';
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { downloadSongDetails, searchItem } from '../network/apiDetails';
+import bgTheme from '../assets/images/music-theme4.jpg';
+// import { TAB_TYPE } from '../utils/Constants';
 import MusicList from './MusicList';
 
 const Home = () => {
     const [itemSearch, setItemSearch] = useState<string>('');
     const [songsList, setSongsList] = useState<any>();
     const [currentPageSongs, setCurrentPageSongs] = useState<any>();
-    const [selectedTab, setSelectedTab] = useState<string>('');
     const [selectedSong, setSelectedSong] = useState<string>('');
     const [selectedSongDetails, setSelectedSongDetails] = useState<any>();
 
-
+    // Initial load
     useEffect(() => {
         onChangePage(null, 1)
-    }, [])
+    }, [songsList])
 
     // Get songs list from search query
     const getList = () => {
@@ -69,10 +70,10 @@ const Home = () => {
         setCurrentPageSongs(temp)
     }
     return (
-        <div>
+        <div className='root-style' style={{ backgroundImage: `url(${bgTheme})` }}>
             <Paper
                 component="form"
-                sx={{ p: '2px 10px', m: '2rem', display: 'inline-flex', alignItems: 'center', width: 400 }}
+                sx={{ p: '2px 10px', m: '2rem', display: 'inline-flex', alignItems: 'center', maxWidth: 400 }}
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -82,16 +83,31 @@ const Home = () => {
                 />
                 <FontAwesomeIcon icon={faSearch} className='hoverable' onClick={onSearch} />
             </Paper>
+            {/* TODO: To be updated once artists and albums api */}
+
+            {/* <div className='d-flex justify-content-center '>
+                <BottomNavigation
+                    className='tab-bar'
+                    showLabels
+                    value={selectedTab}
+                    onChange={(event, newValue) => {
+                        setSelectedTab(newValue);
+                    }}
+                    sx={{ p: '2px 10px', m: '2rem', width: 400 }}
+                >
+                    <BottomNavigationAction label="All" value={TAB_TYPE.ALL} />
+                    <BottomNavigationAction label="Albums" value={TAB_TYPE.ALBUMS}/>
+                    <BottomNavigationAction label="Artists" value={TAB_TYPE.ARTISTS}/>
+                </BottomNavigation>
+            </div> */}
             <MusicList
                 listData={currentPageSongs}
-                selectedTab={selectedTab}
                 selectedSong={selectedSong}
                 downloadSong={downloadSong}
-                setSelectedSong={setSelectedSong}
                 selectedSongDetails={selectedSongDetails} />
-
-            <Pagination className='d-flex justify-content-end' count={songsList && (songsList.length / 10)} size="small" onChange={onChangePage} />
-
+            {songsList && songsList.length > 0 &&
+                <Pagination count={songsList && (songsList.length / 10)} size="small" onChange={onChangePage} color='primary'  />
+            }
         </div >
     )
 }
